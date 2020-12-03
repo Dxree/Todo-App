@@ -2,15 +2,24 @@ language: node_js
 node_js:
   - "12"
 sudo: false
-before_script:
-  - npm install -g @angular/cli
+notifications:
+  email: false
+cache:
+  directories:
+    - ./node_modules
+#before_script:
+#  - npm install -g @angular/cli
+install:
+  - npm install
 script:
   - ng lint
   - ng build --prod
+  - cp dist/Todo-App/index.html dist/Todo-App/404.html
 deploy:
   provider: pages
   skip_cleanup: true
-  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  github_token: $GITHUB_TOKEN  
+  local_dir: dist/Todo-App
   keep_history: true
   on:
     branch: master
