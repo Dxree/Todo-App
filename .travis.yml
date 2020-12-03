@@ -8,13 +8,11 @@ notifications:
 cache:
   directories:
     - ./node_modules
-#before_script:
-#  - npm install -g @angular/cli
 install:
   - npm install
 script:
   - ng lint
-  - ng build --prod 
+  - ng build --prod --base-href /todo-app/
   - cp dist/todo-app/index.html dist/todo-app/404.html
 deploy:
   provider: pages
