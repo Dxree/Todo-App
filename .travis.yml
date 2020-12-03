@@ -15,7 +15,7 @@ install:
 script:
   - ng lint
   - ng build --prod 
-  - cp dist/todo-app/src/index.html dist/todo-app/src/404.html
+  - cp dist/todo-app/index.html dist/todo-app/404.html
 deploy:
   provider: pages
   skip_cleanup: true
