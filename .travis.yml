@@ -20,7 +20,7 @@ deploy:
   provider: pages
   skip_cleanup: true
   github_token: $GITHUB_TOKEN  
-  local_dir: dist/Todo-App
+  local_dir: dist/todo-app
   keep_history: true
   on:
     branch: master
