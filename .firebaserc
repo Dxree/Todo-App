@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "auftragserfassung-df908": {
+      "hosting": {
+        "todo-app": [
+          "auftragserfassung-df908"
+        ]
+      }
+    }
+  }
+}

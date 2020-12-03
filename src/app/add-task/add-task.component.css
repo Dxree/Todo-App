@@ -1,0 +1,14 @@
+
+div {
+  margin-bottom: 2rem;
+}
+
+
+.radio-label {
+  padding-left: 0.5rem;
+  font-weight: normal;
+}
+
+button:hover {
+  color: white;
+}
