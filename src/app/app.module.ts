@@ -17,7 +17,7 @@ import {NgbModule, NgbNavModule} from '@ng-bootstrap/ng-bootstrap';
 import {AddCategoryComponent} from './add-category/add-category.component';
 import {CommonModule} from '@angular/common';
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: 'AIzaSyDtE_VpAXduml53_SPDVMk-Oghe_X-kPAE',
   authDomain: 'kms-todolist.firebaseapp.com',
   databaseURL: 'https://kms-todolist.firebaseio.com',
@@ -55,3 +55,4 @@ const firebaseConfig = {
 })
 export class AppModule {
 }
+

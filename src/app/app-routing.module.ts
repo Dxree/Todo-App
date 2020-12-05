@@ -6,7 +6,7 @@ import {RegisterComponent} from './register/register.component';
 import {AuthGuard} from './auth';
 
 
-const routes: Routes = [
+export const routes: Routes = [
   {path: '', component: GetListComponent, canActivate: [AuthGuard]},
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
