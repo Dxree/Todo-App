@@ -34,7 +34,8 @@ export class UserService {
       .then(() => {
         // create user entry in database
         this.db.firestore.collection('users').doc(username).set({
-          username
+          username,
+          // password
         });
         // create user object to return
         user = {
@@ -110,11 +111,14 @@ export class UserService {
   }
 
   async deleteUser(user: User): Promise<boolean> {
-    await this.signIn(user.username, user.password);
+    await this.signIn(user.username, user.password).then();
     const currentUser = this.auth.auth.currentUser;
-    let success = false;
-    await this.db.firestore.collection('users').doc(user.username).delete().then(() => success = true, () => success = false);
-    await currentUser.delete().then(async () => success = true, () => success = false);
+    if (currentUser == null) {
+      return false;
+    }
+    let success = true;
+    await this.db.firestore.collection('users').doc(user.username).delete().then(() => {}, () => success = false);
+    await currentUser.delete().then(async () => {}, () => success = false);
     return success;
   }
 
