@@ -7,6 +7,7 @@ import {AngularFirestore, AngularFirestoreModule} from '@angular/fire/firestore'
 import {AngularFireModule} from '@angular/fire';
 import {GetListComponent} from '../get-list/get-list.component';
 import {firebaseConfig} from '../app.module';
+import {AddTaskComponent} from "../add-task/add-task.component";
 
 describe('AddCategoryComponent', () => {
   let component: AddCategoryComponent;
@@ -30,6 +31,8 @@ describe('AddCategoryComponent', () => {
   }));
 
   beforeEach(() => {
+    // @ts-ignore
+    AddCategoryComponent.prototype.ngOnInit = () => {};
     fixture = TestBed.createComponent(AddCategoryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

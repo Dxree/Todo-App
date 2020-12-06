@@ -18,7 +18,7 @@ export class AddTaskComponent implements OnInit {
 
   newTask: Task;
   deadline: string;
-  private username: string;
+  username: string;
   allCategories: Category[];
 
 
@@ -39,7 +39,6 @@ export class AddTaskComponent implements OnInit {
     await this.categoryService.getAllCategories(this.username).then(res => this.allCategories = res);
   }
 
-// new comment here
   cancel() {
     document.getElementById('app-add-task').style.display = 'none';
     document.getElementById('btn-add-task').style.display = 'block';
