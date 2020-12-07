@@ -24,11 +24,13 @@ describe('UserService', () => {
       ]
     });
     service = TestBed.get(UserService);
-    await service.deleteUser({username, password}).catch(() => {});
+    await service.deleteUser({username, password}).catch(() => {
+    });
   }, 10000);
 
   afterEach(async () => {
-    await service.deleteUser({username, password}).catch(() => {});
+    await service.deleteUser({username, password}).catch(() => {
+    });
   }, 100000);
 
   it('should be created', () => {
@@ -39,7 +41,7 @@ describe('UserService', () => {
     /* user doesn't exist already */
     expect(await service.getUsers()).not.toContain({username});
     /* user exists now */
-    let actualUser: User;
+    let actualUser: User = null;
     await service.signUp(username, password).then(user => {
       actualUser = user;
     });
@@ -49,7 +51,7 @@ describe('UserService', () => {
     await expect(actualUser).toEqual(expectedUser);
   }, 10000);
 
-  it('should sign in existing user', async () => {
+  it('should sign in and get existing user', async () => {
       /* user doesn't exist already */
       expect(await service.getUsers()).not.toContain({username});
       /* user exists now */
@@ -62,12 +64,9 @@ describe('UserService', () => {
       });
       const expectedUser: User = {username};
       expect(expectedUser).toEqual(actualUser);
+      expect(expectedUser).toEqual(await service.getCurrentUser());
     }, 10000
   );
-
-  it('should sign out existing user');
-
-  it('should sign up and sign in new user');
 
   it('should not sign up new user with already existing username', async () => {
     /* user doesn't exist already */
@@ -80,8 +79,6 @@ describe('UserService', () => {
     /* username already taken */
     await expectAsync(service.signUp(username, password)).toBeRejected();
   }, 10000);
-
-  it('should not sign in existing or new user with wrong username or password');
 
   it('should delete existing user', async () => {
     /* user doesn't exist already */
@@ -103,6 +100,36 @@ describe('UserService', () => {
     await expect(allUsers).not.toContain({username});
     /* user can't be deleted  */
     await expectAsync(service.deleteUser({username, password})).toBeRejected();
+  }, 10000);
+
+  it('should sign out existing user', async () => {
+    /* user doesn't exist  */
+    let allUsers: User[] = await service.getUsers();
+    await expect(allUsers).not.toContain({username});
+    /* user exists now */
+    await service.signUp(username, password);
+    allUsers = await service.getUsers();
+    expect(allUsers).toContain({username});
+    /* sign in user */
+    await service.signIn(username, password);
+    expect(await service.getCurrentUser()).toEqual({username});
+    /* sign out user */
+    await expectAsync(service.signOut()).toBeResolved();
+    expect(await service.getCurrentUser()).toBe(null);
+  }, 10000);
+
+  it('should not sign in existing or new user with wrong username or password', async () => {
+    /* user doesn't exist  */
+    let allUsers: User[] = await service.getUsers();
+    await expect(allUsers).not.toContain({username});
+    /* not existing user can't sign in  */
+    await expectAsync(service.signIn(username, password)).toBeRejected();
+    /* user exists now */
+    await service.signUp(username, password);
+    allUsers = await service.getUsers();
+    expect(allUsers).toContain({username});
+    /* user can't sign in with wrong password */
+    await expectAsync(service.signIn(username, password + '123')).toBeRejected();
   }, 10000);
 
 });
