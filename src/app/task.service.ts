@@ -77,4 +77,15 @@ export class TaskService {
     return success;
   }
 
+  async clearTaskList(userName: string): Promise<void> {
+    const collectionRef = this.db.firestore.collection('users').doc(userName).collection('tasks');
+    await collectionRef
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(document => {
+          collectionRef.doc(document.id).delete();
+        });
+      });
+  }
+
 }

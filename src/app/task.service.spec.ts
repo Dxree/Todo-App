@@ -5,21 +5,33 @@ import {TaskService} from './task.service';
 import {AngularFireAuthModule} from '@angular/fire/auth';
 import {AngularFireModule} from '@angular/fire';
 import {AngularFirestore, AngularFirestoreModule} from '@angular/fire/firestore';
+import * as firebase from 'firebase';
 
 describe('TaskService', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [
-      AngularFireAuthModule,
-      AngularFireModule.initializeApp(firebaseConfig),
-      AngularFirestoreModule
-    ],
-    providers: [
-      AngularFirestore
-    ]
-  }));
+
+  const testUsername = 'user-for-taskService-test';
+  let service: TaskService;
+  let userCollectionRef;
+  let userTaskRef;
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [
+        AngularFireAuthModule,
+        AngularFireModule.initializeApp(firebaseConfig),
+        AngularFirestoreModule
+      ],
+      providers: [
+        AngularFirestore
+      ]
+    });
+    service = TestBed.get(TaskService);
+    userCollectionRef = firebase.firestore().collection('users');
+    await userCollectionRef.doc(testUsername).set({username: testUsername});
+    userTaskRef =  userCollectionRef.doc(testUsername).collection('tasks');
+  });
 
   it('should be created', () => {
-    const service: TaskService = TestBed.get(TaskService);
     expect(service).toBeTruthy();
   });
 });
