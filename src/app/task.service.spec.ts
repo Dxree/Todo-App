@@ -87,8 +87,22 @@ describe('TaskService', () => {
     });
 
     // delete
-    await service.deleteTask(testUsername, task);
+    const success = await service.deleteTask(testUsername, task);
+    expect(success).toBeTruthy();
     await expect(await service.getAllTasks(testUsername)).not.toContain({id: task.id});
   });
 
+  it('should fail if task does not exist', async () => {
+    const task = taskModel;
+    expectAsync(service.deleteTask(testUsername, task)).toBeRejected();
+    expectAsync(service.updateTask(testUsername, task)).toBeRejected();
+  });
+
+  it('should clear task list', async () => {
+    const task = taskModel;
+    await service.addTask(testUsername, task);
+    await service.addTask(testUsername, task);
+    await service.clearTaskList(testUsername);
+    await expect(await service.getAllTasks(testUsername)).not.toContain(task);
+  });
 });
