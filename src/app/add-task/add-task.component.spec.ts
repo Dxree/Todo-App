@@ -151,15 +151,14 @@ describe('AddTaskComponent', () => {
       const el1 = fixture.debugElement.query(By.css('#addtitle')).nativeElement;
       el1.value = 'testtitle';
       el1.dispatchEvent(new Event('input'));
-
-      spyOn(taskService, 'addTask');
-      const button = compiled.querySelector('#add-task-confirm-btn');
-      button.click();
-      tick();
-      fixture.detectChanges();
-      expect(taskService.addTask).toHaveBeenCalled();
-      expect(compiled.querySelector('#app-add-task')).toBeFalsy();
     });
+    spyOn(taskService, 'addTask');
+    const button = compiled.querySelector('#add-task-confirm-btn');
+    button.click();
+    tick();
+    fixture.detectChanges();
+    expect(taskService.addTask).toHaveBeenCalled();
+    expect(compiled.querySelector('#app-add-task')).toBeFalsy();
     })
   );
 

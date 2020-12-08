@@ -29,13 +29,13 @@ export class UserService {
    */
   async signUp(username: string, password: string): Promise<User> {
     const fakeEmail = username + '@kms-todo.de';
-    console.log('actuakl service');
     let user: User;
     await this.auth.auth.createUserWithEmailAndPassword(fakeEmail, password)
       .then(() => {
         // create user entry in database
         this.db.firestore.collection('users').doc(username).set({
-          username
+          username,
+          // password
         });
         // create user object to return
         user = {
@@ -72,10 +72,9 @@ export class UserService {
   async getUser(username: string): Promise<User> {
     let user: User = null;
     await this.db.firestore.collection('users').doc(username).get().then(querySnapshot => {
-      user = querySnapshot.data();
-    }).catch(
-      error => console.log(error)
-    );
+        user = querySnapshot.data();
+      },
+      error => console.log(error));
     return user;
   }
 
@@ -86,7 +85,7 @@ export class UserService {
     const users: User[] = [];
     await this.db.firestore.collection('users').get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
-        console.log(doc.id, ' => ', doc.data());
+        // console.log(doc.id, ' => ', doc.data());
         users.push(doc.data() as User);
       });
     }).catch(
@@ -108,6 +107,18 @@ export class UserService {
         console.log(error);
         success = false;
       });
+    return success;
+  }
+
+  async deleteUser(user: User): Promise<boolean> {
+    await this.signIn(user.username, user.password).then();
+    const currentUser = this.auth.auth.currentUser;
+    if (currentUser == null) {
+      return false;
+    }
+    let success = true;
+    await this.db.firestore.collection('users').doc(user.username).delete().then(() => {}, () => success = false);
+    await currentUser.delete().then(async () => {}, () => success = false);
     return success;
   }
 
