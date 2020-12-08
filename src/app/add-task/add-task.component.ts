@@ -51,12 +51,15 @@ export class AddTaskComponent implements OnInit {
       this.showWarning('Die Aufgabe muss einen Titel haben.');
       return;
     }
+    console.log('ok1');
     if (this.deadline != null) {
       const deadlineDate: Date = new Date(Date.parse(this.deadline));
       this.newTask.deadline = firebase.firestore.Timestamp.fromDate(deadlineDate);
     }
-    this.taskService.addTask(this.username, this.newTask).then();
+    console.log('ok2');
+    await this.taskService.addTask(this.username, this.newTask);
     await this.getListComponent.filter();
+    console.log('ok3');
     this.resetTask();
     document.getElementById('app-add-task').style.display = 'none';
     document.getElementById('btn-add-task').style.display = 'block';
