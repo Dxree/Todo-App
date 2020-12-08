@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {Category} from './category.model';
-import {error} from 'util';
 import {Task} from './task.model';
 
 @Injectable({

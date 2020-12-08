@@ -7,13 +7,26 @@ import {AngularFirestore, AngularFirestoreModule} from '@angular/fire/firestore'
 import {AngularFireModule} from '@angular/fire';
 import {GetListComponent} from '../get-list/get-list.component';
 import {firebaseConfig} from '../app.module';
-import {AddTaskComponent} from "../add-task/add-task.component";
+import {User} from '../user.model';
+import {UserService} from '../user.service';
 
 describe('AddCategoryComponent', () => {
   let component: AddCategoryComponent;
   let fixture: ComponentFixture<AddCategoryComponent>;
 
+  let componentUserService: UserService;
+  let userService: UserService;
+  let userServiceStub: Partial<UserService>;
+
   beforeEach(async(() => {
+
+    userServiceStub = {
+      async getCurrentUser() {
+        const u: User = {username: 'testname', password: 'testpassword'};
+        return u;
+      }
+    };
+
     TestBed.configureTestingModule({
       declarations: [AddCategoryComponent],
       imports: [
@@ -24,19 +37,22 @@ describe('AddCategoryComponent', () => {
       ],
       providers: [
         AngularFirestore,
-        GetListComponent
+        GetListComponent,
+        {
+          provide: UserService, useValue: userServiceStub
+        },
       ]
     })
       .compileComponents();
-  }));
 
-  beforeEach(() => {
-    // @ts-ignore
-    AddCategoryComponent.prototype.ngOnInit = () => {};
     fixture = TestBed.createComponent(AddCategoryComponent);
     component = fixture.componentInstance;
+    userService = fixture.debugElement.injector.get(UserService);
+    componentUserService = userService;
     fixture.detectChanges();
-  });
+  }));
+
+
 
   it('should create', () => {
     expect(component).toBeTruthy();

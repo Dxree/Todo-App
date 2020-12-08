@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {AddTaskComponent} from './add-task.component';
 import {FormsModule} from '@angular/forms';
 import {AngularFireAuthModule} from '@angular/fire/auth';
@@ -8,44 +8,51 @@ import {GetListComponent} from '../get-list/get-list.component';
 import {firebaseConfig} from '../app.module';
 import {UserService} from '../user.service';
 import {CategoryService} from '../category.service';
-import { of, defer } from 'rxjs';
-import {Router} from "@angular/router";
-import {Location} from "@angular/common";
-
-function asyncData<T>(data: T) {
-  return defer(() => Promise.resolve(data));
-}
+import {User} from '../user.model';
+import {Category} from '../category.model';
+import {TaskService} from '../task.service';
+import {Task} from '../task.model';
+import {By} from '@angular/platform-browser';
 
 
 describe('AddTaskComponent', () => {
   let component: AddTaskComponent;
   let fixture: ComponentFixture<AddTaskComponent>;
-  let getCurrentUserSpy: jasmine.Spy;
-  let getAllCategoriesSpy: jasmine.Spy;
+
+  let componentUserService: UserService;
+  let userService: UserService;
+  let userServiceStub: Partial<UserService>;
+
+  let componentCategoryService: CategoryService;
+  let categoryService: CategoryService;
+  let categoryServiceStub: Partial<CategoryService>;
+
+  let componentTaskService: TaskService;
+  let taskService: TaskService;
+  let taskServiceStub: Partial<TaskService>;
+
 
   beforeEach(() => {
-    const username = 'TestUser';
-    const allCategories = [
-      {
-        title: 'Testkat1'
-      },
-      {
-        title: 'Testkat2'
+
+    userServiceStub = {
+      async getCurrentUser() {
+        const u: User = {username: 'testname', password: 'testpassword'};
+        return u;
       }
-    ];
+    };
 
-    const userServiceSpy = jasmine.createSpyObj('UserService', ['getCurrentUser']);
-    getCurrentUserSpy =  userServiceSpy.getCurrentUser.and.returnValue(of(username));
+    categoryServiceStub = {
+      async getAllCategories(username: string) {
+        const allCategories: Category[] = [{title: 'kat1'}, {title: 'kat2'}];
+        return allCategories;
+      }
+    };
 
-    const categoryServiceSpy = jasmine.createSpyObj('categoryService', ['getAllCategories']);
-    getAllCategoriesSpy =  categoryServiceSpy.getAllCategories.and.returnValue(of(allCategories));
-
-
-
-    AddTaskComponent.prototype.ngOnInit = async () => {
-      getCurrentUserSpy.and.returnValue(asyncData(username));
-      getAllCategoriesSpy.and.returnValue(asyncData(allCategories));
-    } ;
+    taskServiceStub = {
+      async addTask(username: string, task: Task) {
+        return true;
+      }
+    };
 
     TestBed.configureTestingModule({
       declarations: [AddTaskComponent],
@@ -59,10 +66,13 @@ describe('AddTaskComponent', () => {
         AngularFirestore,
         GetListComponent,
         {
-          provide: UserService, useValue: userServiceSpy
+          provide: UserService, useValue: userServiceStub
         },
         {
-          provide: CategoryService, useValue: categoryServiceSpy
+          provide: CategoryService, useValue: categoryServiceStub
+        },
+        {
+          provide: TaskService, useValue: taskServiceStub
         },
       ],
     })
@@ -70,6 +80,16 @@ describe('AddTaskComponent', () => {
 
     fixture = TestBed.createComponent(AddTaskComponent);
     component = fixture.componentInstance;
+    userService = fixture.debugElement.injector.get(UserService);
+    componentUserService = userService;
+    userService = TestBed.inject(UserService);
+    categoryService = fixture.debugElement.injector.get(CategoryService);
+    componentCategoryService = categoryService;
+    categoryService = TestBed.inject(CategoryService);
+    taskService = fixture.debugElement.injector.get(TaskService);
+    componentTaskService = taskService;
+    taskService = TestBed.inject(TaskService);
+
     fixture.detectChanges();
   });
 
@@ -113,17 +133,66 @@ describe('AddTaskComponent', () => {
     })
   );
 
-  it('on click of button "add-task-cancel-btn" cancel() should be called', fakeAsync(() => {
+  it('on click of button "add-task-cancel-btn" cancel() should be called, app-add-task should not be visible', fakeAsync(() => {
       const compiled = fixture.debugElement.nativeElement;
       spyOn(component, 'cancel');
       const button = compiled.querySelector('#add-task-cancel-btn');
       button.click();
       tick();
       fixture.detectChanges();
-      expect(component.confirm).toHaveBeenCalled();
+      expect(component.cancel).toHaveBeenCalled();
+      expect(compiled.querySelector('#app-add-task')).toBeFalsy();
     })
   );
 
-  // TODO: check for css classes
+  it('on valid input, #addTask should be called, app-add-task should not be visible anymore', fakeAsync(() => {
+    const compiled = fixture.debugElement.nativeElement;
+    fixture.whenStable().then(() => {
+      const el1 = fixture.debugElement.query(By.css('#addtitle')).nativeElement;
+      el1.value = 'testtitle';
+      el1.dispatchEvent(new Event('input'));
 
+      spyOn(taskService, 'addTask');
+      const button = compiled.querySelector('#add-task-confirm-btn');
+      button.click();
+      tick();
+      fixture.detectChanges();
+      expect(taskService.addTask).toHaveBeenCalled();
+      expect(compiled.querySelector('#app-add-task')).toBeFalsy();
+    });
+    })
+  );
+
+  it('on invalid input, #addTask should be not be called and there should be an error message', fakeAsync(() => {
+      const compiled = fixture.debugElement.nativeElement;
+      spyOn(taskService, 'addTask');
+      spyOn(window, 'alert');
+      fixture.whenStable().then(() => {
+        const el1 = fixture.debugElement.query(By.css('#addTitle')).nativeElement;
+        el1.value = '';
+        el1.dispatchEvent(new Event('input'));
+      });
+      const button = compiled.querySelector('#add-task-confirm-btn');
+      button.click();
+      tick();
+      fixture.detectChanges();
+      expect(taskService.addTask).not.toHaveBeenCalled();
+      expect(window.alert).toHaveBeenCalledWith('Die Aufgabe muss einen Titel haben.');
+    })
+  );
+
+  it('on cancel, new task should be reset', fakeAsync(() => {
+      const compiled = fixture.debugElement.nativeElement;
+      fixture.whenStable().then(() => {
+        const el1 = fixture.debugElement.query(By.css('#addTitle')).nativeElement;
+        el1.value = 'titleToBeReset';
+        el1.dispatchEvent(new Event('input'));
+      });
+      const button = compiled.querySelector('#add-task-cancel-btn');
+      button.click();
+      tick();
+      fixture.detectChanges();
+      expect(component.newTask.title === '').toBeTruthy();
+    })
+  );
 });

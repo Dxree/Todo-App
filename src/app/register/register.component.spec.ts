@@ -14,14 +14,33 @@ import {AddTaskComponent} from '../add-task/add-task.component';
 import {AddCategoryComponent} from '../add-category/add-category.component';
 import {NgbModule, NgbNavModule} from '@ng-bootstrap/ng-bootstrap';
 import {RouterTestingModule} from '@angular/router/testing';
-import {Location} from '@angular/common';
+import {UserService} from '../user.service';
+import {User} from '../user.model';
+import {By} from '@angular/platform-browser';
 
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
+  let componentUserService: UserService;
+  let userService: UserService;
+  let userServiceStub: Partial<UserService>;
 
   beforeEach(async(() => {
+
+    userServiceStub = {
+      async signUp(username: string, password: string) {
+        console.log('signup-test');
+        const u: User = {username, password};
+        return u;
+      },
+      async signIn(username: string, password: string) {
+        console.log('signin-test');
+        const u: User = {username, password};
+        return u;
+      }
+    };
+
     TestBed.configureTestingModule({
       declarations: [RegisterComponent, GetListComponent, LoginComponent, AddTaskComponent, AddCategoryComponent],
       imports: [
@@ -36,7 +55,8 @@ describe('RegisterComponent', () => {
       ],
       providers: [
         AngularFirestore,
-        RouterModule
+        RouterModule,
+        { provide: UserService, useValue: userServiceStub }
       ]
     })
       .compileComponents();
@@ -45,6 +65,9 @@ describe('RegisterComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
+    userService = fixture.debugElement.injector.get(UserService);
+    componentUserService = userService;
+    userService = TestBed.inject(UserService);
     fixture.detectChanges();
   });
 
@@ -72,12 +95,62 @@ describe('RegisterComponent', () => {
     button.click();
     tick();
     fixture.detectChanges();
+    component.onSubmit();
     expect(component.onSubmit).toHaveBeenCalled();
   })
   );
 
+  it('on click of button "registerSubmitBtn" #onSubmit should be executed if input is valid and #signUp in userService should be called',
+    fakeAsync(() => {
+      const compiled = fixture.debugElement.nativeElement;
+      fixture.whenStable().then(() => {
+        const el1 = fixture.debugElement.query(By.css('#username')).nativeElement;
+        expect(el1.value).toBe('');
+        el1.value = 'testuser';
+        el1.dispatchEvent(new Event('input'));
+
+        const el2 = fixture.debugElement.query(By.css('#password')).nativeElement;
+        expect(el2.value).toBe('');
+        el2.value = 'testpassword';
+        el2.dispatchEvent(new Event('input'));
+
+        spyOn(userService, 'signUp');
+        const button = compiled.querySelector('#registerSubmitBtn');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(userService.signUp).toHaveBeenCalled();
+      });
+    })
+  );
+
+  it('on invalid input #signUp in userService should not be called and an error message should appear',
+    fakeAsync(() => {
+      const compiled = fixture.debugElement.nativeElement;
+      fixture.whenStable().then(() => {
+        const el1 = fixture.debugElement.query(By.css('#username')).nativeElement;
+        expect(el1.value).toBe('');
+        el1.value = 'testUserINvalid';
+        el1.dispatchEvent(new Event('input'));
+
+        const el2 = fixture.debugElement.query(By.css('#password')).nativeElement;
+        expect(el2.value).toBe('');
+        el2.value = 'testpassword';
+        el2.dispatchEvent(new Event('input'));
+
+        spyOn(userService, 'signUp');
+        const button = compiled.querySelector('#registerSubmitBtn');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(userService.signUp).not.toHaveBeenCalled();
+        expect(compiled.querySelector('.invalid-feedback')).toBeTruthy();
+      });
+    })
+  );
+
   it('on click on router link "Abbrechen" you should be back on login page', fakeAsync((
-    inject([Router, Location], (router: Router, location: Location) => {
+    inject([Router], (router: Router) => {
     const compiled = fixture.debugElement.nativeElement;
     const routerLink = compiled.querySelector('#login-link');
     routerLink.click();

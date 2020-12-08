@@ -29,6 +29,7 @@ export class UserService {
    */
   async signUp(username: string, password: string): Promise<User> {
     const fakeEmail = username + '@kms-todo.de';
+    console.log('actuakl service');
     let user: User;
     await this.auth.auth.createUserWithEmailAndPassword(fakeEmail, password)
       .then(() => {
