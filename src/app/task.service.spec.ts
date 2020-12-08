@@ -8,7 +8,7 @@ import {AngularFirestore, AngularFirestoreModule} from '@angular/fire/firestore'
 import * as firebase from 'firebase';
 import {Category} from './category.model';
 import Timestamp = firebase.firestore.Timestamp;
-import { Task } from './task.model';
+import {Task} from './task.model';
 
 describe('TaskService', () => {
 
@@ -42,7 +42,7 @@ describe('TaskService', () => {
     service = TestBed.get(TaskService);
     userCollectionRef = firebase.firestore().collection('users');
     await userCollectionRef.doc(testUsername).set({username: testUsername});
-    userTaskRef =  userCollectionRef.doc(testUsername).collection('tasks');
+    userTaskRef = userCollectionRef.doc(testUsername).collection('tasks');
   });
 
   afterEach(async () => {
@@ -54,19 +54,10 @@ describe('TaskService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should save and fetch new task', async () => {
-    const task = taskModel;
-    const success: boolean = await service.addTask(testUsername, task);
-    expect(success).toBeTruthy();
-
-    // expect(await service.getAllTasks(testUsername)).toContain(task);
-  });
-
-  /*
   it('should update tasks', async () => {
-    let task: Task = taskModel;
+    const task: Task = taskModel;
     await userTaskRef.add(task).then(document => {
-      task = document;
+      task.id = document.id;
     });
 
     // update
@@ -77,7 +68,7 @@ describe('TaskService', () => {
     let data;
     await userTaskRef.doc(task.id).get().then(doc => data = doc.data());
     expect(data.title).toEqual(task.title);
-  });*/
+  });
 
   it('should delete tasks', async () => {
     const task = taskModel;
@@ -105,4 +96,42 @@ describe('TaskService', () => {
     await service.clearTaskList(testUsername);
     await expect(await service.getAllTasks(testUsername)).not.toContain(task);
   });
+
+  it('should create task with correct values', async () => {
+    const task: Task = taskModel;
+
+    const success: boolean = await service.addTask(testUsername, task);
+    expect(success).toBeTruthy();
+
+    await userTaskRef.get().then(querySnapshot => {
+        querySnapshot.forEach(document => {
+          // check relevant fields
+          expect(document.data().title).toEqual(task.title);
+          expect(document.data().description).toEqual(task.description);
+          expect(document.data().deadline).toEqual(task.deadline);
+          expect(document.data().priority).toEqual(task.priority);
+          expect(document.data().done).toEqual(task.done);
+        });
+      }
+    );
+  });
+
+
+  it('should fetch multiple tasks', async () => {
+    const task: Task = taskModel;
+
+    await service.addTask(testUsername, task);
+    await service.addTask(testUsername, task);
+
+    const tasks: Task[] = await service.getAllTasks(testUsername);
+    tasks.forEach(firebaseTask => {
+      // check relevant fields
+      expect(firebaseTask.title).toEqual(task.title);
+      expect(firebaseTask.description).toEqual(task.description);
+      expect(firebaseTask.deadline).toEqual(task.deadline);
+      expect(firebaseTask.priority).toEqual(task.priority);
+      expect(firebaseTask.done).toEqual(task.done);
+    });
+  });
+
 });
