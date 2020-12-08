@@ -51,6 +51,10 @@ describe('AddTaskComponent', () => {
     taskServiceStub = {
       async addTask(username: string, task: Task) {
         return true;
+      },
+      async getAllTasks(username: string) {
+        const allTasks: Task[] = [{title: 'task 1', priority: 3}, {title: 'task 2', priority: 3}];
+        return allTasks;
       }
     };
 
@@ -146,19 +150,20 @@ describe('AddTaskComponent', () => {
   );
 
   it('on valid input, #addTask should be called, app-add-task should not be visible anymore', fakeAsync(() => {
-    const compiled = fixture.debugElement.nativeElement;
-    fixture.whenStable().then(() => {
-      const el1 = fixture.debugElement.query(By.css('#addtitle')).nativeElement;
-      el1.value = 'testtitle';
-      el1.dispatchEvent(new Event('input'));
-    });
-    spyOn(taskService, 'addTask');
-    const button = compiled.querySelector('#add-task-confirm-btn');
-    button.click();
-    tick();
-    fixture.detectChanges();
-    expect(taskService.addTask).toHaveBeenCalled();
-    expect(compiled.querySelector('#app-add-task')).toBeFalsy();
+      const compiled = fixture.debugElement.nativeElement;
+      spyOn(taskService, 'addTask');
+      fixture.whenStable().then(() => {
+        const el1 = fixture.debugElement.query(By.css('#addTitle')).nativeElement;
+        el1.value = 'testtitle';
+        el1.dispatchEvent(new Event('input'));
+        const button = compiled.querySelector('#add-task-confirm-btn');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(taskService.addTask).toHaveBeenCalled();
+        expect(compiled.querySelector('#app-add-task')).toBeFalsy();
+      });
+
     })
   );
 
