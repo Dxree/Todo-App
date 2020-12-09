@@ -104,5 +104,4 @@ describe('UserService', () => {
     /* user can't be deleted  */
     await expectAsync(service.deleteUser({username, password})).toBeRejected();
   }, 10000);
-
 });
