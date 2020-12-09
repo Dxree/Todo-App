@@ -41,28 +41,22 @@ describe('CategoryService', () => {
     console.log(await categoryService.getAllCategories(username));
   }, 100000);
   it('should be created', async () => {
-    await deleteAllCategories();
     expect(categoryService).toBeTruthy();
-    await deleteAllCategories();
   });
 
   it('getAllCategories für neuen User -> leere Liste', async () => {
-    await deleteAllCategories();
     const categories: Category[] = await categoryService.getAllCategories(username);
     // noch keine Kategorien erstellt -> leere Liste
     expect(categories.length).toBe(0);
-    await deleteAllCategories();
   }, 10000);
   it('addCategory für neuen User -> success = true, categories.length = 1, CategoryList, die zurück kommt beinhaltet ' +
     'neu erstelle Kategorie', async () => {
-    await deleteAllCategories();
     const category: Category = {title};
     const added: boolean = await categoryService.addCategory(username, category);
     // noch keine Kategorien erstellt -> leere Liste
     expect(added).toBe(true);
     const categories: Category[] = await categoryService.getAllCategories(username);
     expect(categories.length).toBe(1);
-    await deleteAllCategories();
   }, 10000);
   it('deleteCategory -> success = true, categories.length = 0, CategoryList, die zurück kommt beinhaltet ' +
     'keine Kategorien', async () => {
@@ -76,7 +70,6 @@ describe('CategoryService', () => {
     expect(deleted).toBe(true);
   }, 10000);
   it('rename category -> success = true', async () => {
-      await deleteAllCategories();
       const category: Category = {title};
       const newCategory: Category = {title: 'test32154321'};
       const added: boolean = await categoryService.addCategory(username, category);
@@ -88,7 +81,6 @@ describe('CategoryService', () => {
       expect(renamed).toBe(true);
       categories = await categoryService.getAllCategories(username);
       expect(categories[0]).toEqual({title: 'test32154321'});
-      await deleteAllCategories();
     },
     10000);
 
@@ -99,5 +91,4 @@ describe('CategoryService', () => {
       });
     }
   }
-})
-;
+});
