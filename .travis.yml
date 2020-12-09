@@ -14,10 +14,11 @@ script:
   - ng lint
   - ng build --prod --base-href https://dxree.github.io/Todo-App/
   - cp dist/todo-app/index.html dist/todo-app/404.html
+  - npm run test-headless
 deploy:
   provider: pages
   skip_cleanup: true
-  github_token: $GITHUB_TOKEN  
+  github_token: $GITHUB_TOKEN
   local_dir: dist/todo-app
   keep_history: true
   on:
