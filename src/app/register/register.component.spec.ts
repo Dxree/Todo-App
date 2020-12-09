@@ -72,7 +72,6 @@ describe('RegisterComponent', () => {
   });
 
 
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -100,7 +99,7 @@ describe('RegisterComponent', () => {
   })
   );
 
-  it('on click of button "registerSubmitBtn" #onSubmit should be executed if input is valid and #signUp in userService should be called',
+  xit('on click of button "registerSubmitBtn" #onSubmit should be executed if input is valid and #signUp in userService should be called',
     fakeAsync(() => {
       const compiled = fixture.debugElement.nativeElement;
       fixture.whenStable().then(() => {
@@ -124,7 +123,7 @@ describe('RegisterComponent', () => {
     })
   );
 
-  it('on invalid input #signUp in userService should not be called and an error message should appear',
+  xit('on invalid input #signUp in userService should not be called and an error message should appear',
     fakeAsync(() => {
       const compiled = fixture.debugElement.nativeElement;
       fixture.whenStable().then(() => {
