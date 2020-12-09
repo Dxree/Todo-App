@@ -171,11 +171,11 @@ describe('AddTaskComponent', () => {
       const compiled = fixture.debugElement.nativeElement;
       spyOn(taskService, 'addTask');
       spyOn(window, 'alert');
-      fixture.whenStable().then(() => {
+      fixture.whenStable().then(fakeAsync(() => {
         const el1 = fixture.debugElement.query(By.css('#addTitle')).nativeElement;
         el1.value = '';
         el1.dispatchEvent(new Event('input'));
-      });
+      }));
       const button = compiled.querySelector('#add-task-confirm-btn');
       button.click();
       tick();
