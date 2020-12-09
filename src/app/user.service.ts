@@ -51,7 +51,6 @@ export class UserService {
    */
   async signOut() {
     await this.auth.auth.signOut();
-    console.log('sign out');
   }
 
   /**
