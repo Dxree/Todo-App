@@ -52,13 +52,13 @@ describe('CategoryService', () => {
     }
   }
 
-  it('getAllCategories für neuen User -> leere Liste', async () => {
+  xit('getAllCategories für neuen User -> leere Liste', async () => {
     await deleteAllCategories();
     const categories: Category[] = await categoryService.getAllCategories(username);
     // noch keine Kategorien erstellt -> leere Liste
     expect(categories.length).toBe(0);
   }, 10000);
-  it('addCategory für neuen User -> success = true, categories.length = 1, CategoryList, die zurück kommt beinhaltet ' +
+  xit('addCategory für neuen User -> success = true, categories.length = 1, CategoryList, die zurück kommt beinhaltet ' +
     'neu erstelle Kategorie', async () => {
     await deleteAllCategories();
     const category: Category = {title};
@@ -68,7 +68,7 @@ describe('CategoryService', () => {
     const categories: Category[] = await categoryService.getAllCategories(username);
     expect(categories.length).toBe(1);
   }, 10000);
-  it('deleteCategory -> success = true, categories.length = 0, CategoryList, die zurück kommt beinhaltet ' +
+  xit('deleteCategory -> success = true, categories.length = 0, CategoryList, die zurück kommt beinhaltet ' +
     'keine Kategorien', async () => {
     let categories: Category[] = await categoryService.getAllCategories(username);
     expect(categories.length).toBe(0);
