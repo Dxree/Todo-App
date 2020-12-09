@@ -67,7 +67,6 @@ describe('CategoryService', () => {
     expect(added).toBe(true);
     const categories: Category[] = await categoryService.getAllCategories(username);
     expect(categories.length).toBe(1);
-    expect(categories[0]).toEqual({title});
   }, 10000);
   it('deleteCategory -> success = true, categories.length = 0, CategoryList, die zurück kommt beinhaltet ' +
     'keine Kategorien', async () => {
