@@ -118,16 +118,18 @@ export class GetListComponent implements OnInit {
       this.editableCategory = null;
     }
     if (this.editableCategory.title.length === 0) {
-      alert('Please add a title.');
+      alert('Die Kategorie muss einen Titel haben.');
     } else {
-      this.categoryService.renameCategory(this.username, this.originalCategoryId, this.editableCategory).then(() => {
-        this.filter();
+      this.categoryService.renameCategory(this.username, this.originalCategoryId, this.editableCategory).then(async () => {
+        await this.filter();
       });
     }
   }
 
   deleteTask(task: Task) {
-    this.taskService.deleteTask(this.username, task).then(() => this.filter());
+    this.taskService.deleteTask(this.username, task).then(async () => {
+      await this.filter();
+    });
   }
 
   deleteCategory(category: Category) {
@@ -152,8 +154,8 @@ export class GetListComponent implements OnInit {
     await this.getCategoryList();
 
     if (this.filterword != null && this.filterword.trim().length !== 0) {
-      this.todoList = todos.filter(task => filterCrit(task.title, task.description, this.filterword));
-      this.doneList = dones.filter(task => filterCrit(task.title, task.description, this.filterword));
+      this.todoList = todos.filter(task => this.filterCrit(task.title, task.description, this.filterword));
+      this.doneList = dones.filter(task => this.filterCrit(task.title, task.description, this.filterword));
     } else {
       await this.getAllTasks();
     }
@@ -163,11 +165,11 @@ export class GetListComponent implements OnInit {
       this.doneList = this.todoList;
       this.categoryList = this.categoryList.filter(cat => cat.title === this.filtercategory);
     }
+  }
 
-    function filterCrit(target1: string, target2: string, search: string): boolean {
-      search = search.trim().toLowerCase();
-      return target1.trim().toLowerCase().includes(search) || target2.trim().toLowerCase().includes(search);
-    }
+  filterCrit(target1: string, target2: string, search: string): boolean {
+    search = search.trim().toLowerCase();
+    return target1.trim().toLowerCase().includes(search) || target2.trim().toLowerCase().includes(search);
   }
 
   filterCategory(tasks: Task[], filter: string) {

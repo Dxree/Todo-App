@@ -110,4 +110,16 @@ export class UserService {
     return success;
   }
 
+  async deleteUser(user: User): Promise<boolean> {
+    await this.signIn(user.username, user.password).then();
+    const currentUser = this.auth.auth.currentUser;
+    if (currentUser == null) {
+      return false;
+    }
+    let success = true;
+    await this.db.firestore.collection('users').doc(user.username).delete().then(() => {}, () => success = false);
+    await currentUser.delete().then(async () => {}, () => success = false);
+    return success;
+  }
+
 }
