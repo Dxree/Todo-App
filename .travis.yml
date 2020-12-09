@@ -14,7 +14,7 @@ script:
   - ng lint
   - ng build --prod --base-href https://dxree.github.io/Todo-App/
   - cp dist/todo-app/index.html dist/todo-app/404.html
-  - ng test --watch=false --browsers=ChromeHeadless
+  - ng test --watch=false
 deploy:
   provider: pages
   skip_cleanup: true
