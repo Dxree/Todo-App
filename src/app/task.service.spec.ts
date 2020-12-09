@@ -85,8 +85,8 @@ describe('TaskService', () => {
 
   it('should fail if task does not exist', async () => {
     const task = taskModel;
-    expectAsync(service.deleteTask(testUsername, task)).toBeRejected();
-    expectAsync(service.updateTask(testUsername, task)).toBeRejected();
+    await expectAsync(service.deleteTask(testUsername, task)).toBeRejected();
+    await expectAsync(service.updateTask(testUsername, task)).toBeRejected();
   });
 
   it('should clear task list', async () => {
