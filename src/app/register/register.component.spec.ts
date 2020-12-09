@@ -99,55 +99,6 @@ describe('RegisterComponent', () => {
   })
   );
 
-  xit('on click of button "registerSubmitBtn" #onSubmit should be executed if input is valid and #signUp in userService should be called',
-    fakeAsync(() => {
-      const compiled = fixture.debugElement.nativeElement;
-      fixture.whenStable().then(() => {
-        const el1 = fixture.debugElement.query(By.css('#username')).nativeElement;
-        expect(el1.value).toBe('');
-        el1.value = 'testuser';
-        el1.dispatchEvent(new Event('input'));
-
-        const el2 = fixture.debugElement.query(By.css('#password')).nativeElement;
-        expect(el2.value).toBe('');
-        el2.value = 'testpassword';
-        el2.dispatchEvent(new Event('input'));
-
-        spyOn(userService, 'signUp');
-        const button = compiled.querySelector('#registerSubmitBtn');
-        button.click();
-        tick();
-        fixture.detectChanges();
-        expect(userService.signUp).toHaveBeenCalled();
-      });
-    })
-  );
-
-  xit('on invalid input #signUp in userService should not be called and an error message should appear',
-    fakeAsync(() => {
-      const compiled = fixture.debugElement.nativeElement;
-      fixture.whenStable().then(() => {
-        const el1 = fixture.debugElement.query(By.css('#username')).nativeElement;
-        expect(el1.value).toBe('');
-        el1.value = 'testUserINvalid';
-        el1.dispatchEvent(new Event('input'));
-
-        const el2 = fixture.debugElement.query(By.css('#password')).nativeElement;
-        expect(el2.value).toBe('');
-        el2.value = 'testpassword';
-        el2.dispatchEvent(new Event('input'));
-
-        spyOn(userService, 'signUp');
-        const button = compiled.querySelector('#registerSubmitBtn');
-        button.click();
-        tick();
-        fixture.detectChanges();
-        expect(userService.signUp).not.toHaveBeenCalled();
-        expect(compiled.querySelector('.invalid-feedback')).toBeTruthy();
-      });
-    })
-  );
-
   it('on click on router link "Abbrechen" you should be back on login page', fakeAsync((
     inject([Router], (router: Router) => {
     const compiled = fixture.debugElement.nativeElement;
