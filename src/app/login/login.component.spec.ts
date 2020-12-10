@@ -28,9 +28,14 @@ describe('LoginComponent', () => {
   beforeEach(async(() => {
 
     userServiceStub = {
-      async signIn(username: string, password: string) {
-        console.log('signin-test');
+      async signIn(username: string, password: string): Promise<User> {
         const u: User = {username, password};
+        return new Promise<User>((resolve => {
+          resolve(u);
+        }));
+      },
+      async getCurrentUser() {
+        const u: User = {username: 'testname', password: 'testpassword'};
         return u;
       }
     };
@@ -88,6 +93,49 @@ describe('LoginComponent', () => {
       tick();
       fixture.detectChanges();
       expect(component.onSubmit).toHaveBeenCalled();
+    })
+  );
+
+  it('on valid input #signIn in userService should be called',
+    fakeAsync(() => {
+      const compiled = fixture.debugElement.nativeElement;
+      const u: User = {username: 'test', password: 'password'};
+      spyOn(userService, 'signIn').and.returnValue(Promise.resolve(u));
+      component.loginForm.controls.username.setValue('test1');
+      component.loginForm.controls.password.setValue('123456');
+      expect(component.loginForm.controls.username.value).toEqual('test1');
+      inject([Router], (router: Router) => {
+        component.onSubmit();
+        tick();
+        fixture.detectChanges();
+        expect(userService.signIn).toHaveBeenCalled();
+        }
+      );
+     })
+  );
+
+  it('on invalid input #signIn in userService should not be called and an error message should appear',
+    fakeAsync(() => {
+      const compiled = fixture.debugElement.nativeElement;
+      fixture.whenStable().then(() => {
+        const el1 = fixture.debugElement.query(By.css('#username')).nativeElement;
+        expect(el1.value).toBe('');
+        el1.value = '';
+        el1.dispatchEvent(new Event('input'));
+
+        const el2 = fixture.debugElement.query(By.css('#password')).nativeElement;
+        expect(el2.value).toBe('');
+        el2.value = '';
+        el2.dispatchEvent(new Event('input'));
+
+        spyOn(userService, 'signIn');
+        const button = compiled.querySelector('#loginSubmitBtn');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(userService.signIn).not.toHaveBeenCalled();
+        expect(compiled.querySelector('.invalid-feedback')).toBeTruthy();
+      });
     })
   );
 

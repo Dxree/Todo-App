@@ -36,7 +36,6 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.invalid) {
       return;
     }
-
     this.loading = true;
     this.userService.signIn(this.loginForm.controls.username.value.trim(), this.loginForm.controls.password.value)
       .then(

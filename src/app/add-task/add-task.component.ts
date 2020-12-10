@@ -40,13 +40,12 @@ export class AddTaskComponent implements OnInit {
   }
 
   cancel() {
-    document.getElementById('app-add-task').style.display = 'none';
-    document.getElementById('btn-add-task').style.display = 'block';
-    document.getElementById('btn-add-category').style.display = 'block';
-    this.resetTask();
+   this.resetCss();
+   this.resetTask();
   }
 
   async confirm() {
+    const inputValue = (document.getElementById('addTitle') as HTMLInputElement).value;
     if (this.newTask.title.length === 0) {
       this.showWarning('Die Aufgabe muss einen Titel haben.');
       return;
@@ -55,12 +54,11 @@ export class AddTaskComponent implements OnInit {
       const deadlineDate: Date = new Date(Date.parse(this.deadline));
       this.newTask.deadline = firebase.firestore.Timestamp.fromDate(deadlineDate);
     }
-    this.taskService.addTask(this.username, this.newTask).then();
+    await this.taskService.addTask(this.username, this.newTask);
     await this.getListComponent.filter();
+    this.resetCss();
     this.resetTask();
-    document.getElementById('app-add-task').style.display = 'none';
-    document.getElementById('btn-add-task').style.display = 'block';
-    document.getElementById('btn-add-category').style.display = 'block';
+
   }
 
   resetTask() {
@@ -71,6 +69,12 @@ export class AddTaskComponent implements OnInit {
       done: false,
       categories: [null]
     };
+  }
+
+  resetCss() {
+    document.getElementById('app-add-task').style.display = 'none';
+    document.getElementById('btn-add-task').style.display = 'block';
+    document.getElementById('btn-add-category').style.display = 'block';
   }
 
   showWarning(warning: string) {

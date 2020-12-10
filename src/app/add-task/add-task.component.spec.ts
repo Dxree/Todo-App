@@ -1,6 +1,6 @@
 import { ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {AddTaskComponent} from './add-task.component';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, NgModel} from '@angular/forms';
 import {AngularFireAuthModule} from '@angular/fire/auth';
 import {AngularFirestore, AngularFirestoreModule} from '@angular/fire/firestore';
 import {AngularFireModule} from '@angular/fire';
@@ -145,7 +145,46 @@ describe('AddTaskComponent', () => {
       tick();
       fixture.detectChanges();
       expect(component.cancel).toHaveBeenCalled();
-     // expect(compiled.querySelector('#app-add-task')).toBeFalsy();
+      expect(compiled.querySelector('#app-add-task')).toBeFalsy();
+    })
+  );
+
+
+  it('on valid input, #addTask should be called and  #resetCss should be reset ', fakeAsync(() => {
+      const compiled = fixture.debugElement.nativeElement;
+      spyOn(taskService, 'addTask').and.returnValue(Promise.resolve(true));
+      spyOn(component, 'resetCss');
+      component.newTask.title = 'testtitle';
+      expect(component.newTask.title).toEqual('testtitle');
+
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      const el2 = fixture.debugElement.query(By.css('#addTitle'));
+      expect(el2.nativeElement.getAttribute('ng-reflect-model')).toBe('testtitle');
+      const button = compiled.querySelector('#add-task-confirm-btn');
+      button.click();
+      tick();
+      fixture.detectChanges();
+      expect(taskService.addTask).toHaveBeenCalled();
+      expect(component.resetCss).toHaveBeenCalled();
+    })
+  );
+
+  it('on invalid input, #addTask should be not be called and there should be an error message', fakeAsync(() => {
+      const compiled = fixture.debugElement.nativeElement;
+      spyOn(taskService, 'addTask');
+      spyOn(window, 'alert');
+      const el1 = fixture.debugElement.query(By.css('#addTitle')).nativeElement;
+      el1.value = '';
+      el1.dispatchEvent(new Event('input'));
+      const button = compiled.querySelector('#add-task-confirm-btn');
+      button.click();
+      tick();
+      fixture.detectChanges();
+      expect(taskService.addTask).not.toHaveBeenCalled();
+      expect(window.alert).toHaveBeenCalledWith('Die Aufgabe muss einen Titel haben.');
     })
   );
 
@@ -157,8 +196,8 @@ describe('AddTaskComponent', () => {
         el1.dispatchEvent(new Event('input'));
       });
       AddTaskComponent.prototype.cancel = async () => {
-          AddTaskComponent.prototype.resetTask();
-    } ;
+        AddTaskComponent.prototype.resetTask();
+      } ;
       const button = compiled.querySelector('#add-task-cancel-btn');
       button.click();
       tick();

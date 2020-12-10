@@ -29,14 +29,16 @@ describe('RegisterComponent', () => {
   beforeEach(async(() => {
 
     userServiceStub = {
-      async signUp(username: string, password: string) {
-        console.log('signup-test');
+      async signUp(username: string, password: string): Promise<User> {
         const u: User = {username, password};
-        return u;
+        return Promise.resolve(u);
       },
-      async signIn(username: string, password: string) {
-        console.log('signin-test');
+      async signIn(username: string, password: string): Promise<User> {
         const u: User = {username, password};
+        return Promise.resolve(u);
+      },
+      async getCurrentUser() {
+        const u: User = {username: 'testname', password: 'testpassword'};
         return u;
       }
     };
@@ -88,26 +90,77 @@ describe('RegisterComponent', () => {
   });
 
   it('on click of button "registerSubmitBtn" onSubmit() should be called', fakeAsync(() => {
-    const compiled = fixture.debugElement.nativeElement;
-    spyOn(component, 'onSubmit');
-    const button = compiled.querySelector('#registerSubmitBtn');
-    button.click();
-    tick();
-    fixture.detectChanges();
-    component.onSubmit();
-    expect(component.onSubmit).toHaveBeenCalled();
-  })
+      const compiled = fixture.debugElement.nativeElement;
+      spyOn(component, 'onSubmit');
+      const button = compiled.querySelector('#registerSubmitBtn');
+      button.click();
+      tick();
+      fixture.detectChanges();
+      component.onSubmit();
+      expect(component.onSubmit).toHaveBeenCalled();
+    })
+  );
+
+  it('on click of button "registerSubmitBtn" #onSubmit should be executed if input is valid and #signUp in userService should be called',
+    fakeAsync(() => {
+      const compiled = fixture.debugElement.nativeElement;
+
+      const el1 = fixture.debugElement.query(By.css('#username')).nativeElement;
+      expect(el1.value).toBe('');
+      el1.value = 'testuservalid';
+      el1.dispatchEvent(new Event('input'));
+
+      const el2 = fixture.debugElement.query(By.css('#password')).nativeElement;
+      expect(el2.value).toBe('');
+      el2.value = 'testpassword';
+      el2.dispatchEvent(new Event('input'));
+      const user: User = {username: 'testuservalid', password: 'testpassword'};
+      spyOn(userService, 'signUp').and.returnValue(Promise.resolve(user));
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+      const button = compiled.querySelector('#registerSubmitBtn');
+      button.click();
+      tick();
+      fixture.detectChanges();
+      expect(userService.signUp).toHaveBeenCalled();
+
+    })
+  );
+
+  it('on invalid input #signUp in userService should not be called and an error message should appear',
+    fakeAsync(() => {
+      const compiled = fixture.debugElement.nativeElement;
+      const el1 = fixture.debugElement.query(By.css('#username')).nativeElement;
+      expect(el1.value).toBe('');
+      el1.value = 'testUserINvalid';
+      el1.dispatchEvent(new Event('input'));
+
+      const el2 = fixture.debugElement.query(By.css('#password')).nativeElement;
+      expect(el2.value).toBe('');
+      el2.value = 'testpassword';
+      el2.dispatchEvent(new Event('input'));
+
+      spyOn(userService, 'signUp');
+      const button = compiled.querySelector('#registerSubmitBtn');
+      button.click();
+      tick();
+      fixture.detectChanges();
+      expect(userService.signUp).not.toHaveBeenCalled();
+      expect(compiled.querySelector('.invalid-feedback')).toBeTruthy();
+
+    })
   );
 
   it('on click on router link "Abbrechen" you should be back on login page', fakeAsync((
     inject([Router], (router: Router) => {
-    const compiled = fixture.debugElement.nativeElement;
-    const routerLink = compiled.querySelector('#login-link');
-    routerLink.click();
-    tick();
-    expect(router.url).toBe('/login');
-    }
-  )
+        const compiled = fixture.debugElement.nativeElement;
+        const routerLink = compiled.querySelector('#login-link');
+        routerLink.click();
+        tick();
+        expect(router.url).toBe('/login');
+      }
+    )
   )));
 
 });
