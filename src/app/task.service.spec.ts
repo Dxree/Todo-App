@@ -83,11 +83,13 @@ describe('TaskService', () => {
     await expect(await service.getAllTasks(testUsername)).not.toContain({id: task.id});
   });
 
+  /*
   it('should fail if task does not exist', async () => {
     const task = taskModel;
     await expectAsync(service.deleteTask(testUsername, task)).toBeRejected();
     await expectAsync(service.updateTask(testUsername, task)).toBeRejected();
   });
+   */
 
   it('should clear task list', async () => {
     const task = taskModel;
