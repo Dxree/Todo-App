@@ -36,31 +36,21 @@ describe('CategoryService', () => {
   }, 10000);
   afterEach(async () => {
     // await userService.deleteUser({username, password}).catch(() => {});
+    await deleteAllCategories();
     console.log('test passed');
     console.log(await categoryService.getAllCategories(username));
   }, 100000);
-  it('should be created', () => {
-    const service: CategoryService = TestBed.get(CategoryService);
-    expect(service).toBeTruthy();
+  it('should be created', async () => {
+    expect(categoryService).toBeTruthy();
   });
 
-  async function deleteAllCategories() {
-    const categories: Category [] = await categoryService.getAllCategories(username);
-    for (const cat of categories) {
-      await categoryService.deleteCategory(username, cat).catch(() => {
-      });
-    }
-  }
-
-  xit('getAllCategories für neuen User -> leere Liste', async () => {
-    await deleteAllCategories();
+  it('getAllCategories für neuen User -> leere Liste', async () => {
     const categories: Category[] = await categoryService.getAllCategories(username);
     // noch keine Kategorien erstellt -> leere Liste
     expect(categories.length).toBe(0);
   }, 10000);
-  xit('addCategory für neuen User -> success = true, categories.length = 1, CategoryList, die zurück kommt beinhaltet ' +
+  it('addCategory für neuen User -> success = true, categories.length = 1, CategoryList, die zurück kommt beinhaltet ' +
     'neu erstelle Kategorie', async () => {
-    await deleteAllCategories();
     const category: Category = {title};
     const added: boolean = await categoryService.addCategory(username, category);
     // noch keine Kategorien erstellt -> leere Liste
@@ -68,7 +58,7 @@ describe('CategoryService', () => {
     const categories: Category[] = await categoryService.getAllCategories(username);
     expect(categories.length).toBe(1);
   }, 10000);
-  xit('deleteCategory -> success = true, categories.length = 0, CategoryList, die zurück kommt beinhaltet ' +
+  it('deleteCategory -> success = true, categories.length = 0, CategoryList, die zurück kommt beinhaltet ' +
     'keine Kategorien', async () => {
     let categories: Category[] = await categoryService.getAllCategories(username);
     expect(categories.length).toBe(0);
@@ -80,28 +70,25 @@ describe('CategoryService', () => {
     expect(deleted).toBe(true);
   }, 10000);
   it('rename category -> success = true', async () => {
-    await deleteAllCategories();
-    const category: Category = {title};
-    const newCategory: Category = {title: 'test32154321'};
-    let added: boolean;
-    categoryService.addCategory(username, category).then(res => {
-      added = res;
+      const category: Category = {title};
+      const newCategory: Category = {title: 'test32154321'};
+      const added: boolean = await categoryService.addCategory(username, category);
       expect(added).toBe(true);
-      let categories: Category[];
-      categoryService.getAllCategories(username).then(resp => {
-        categories = resp;
-        expect(categories.length).toBe(1);
-        expect(categories[0]).toEqual({title});
-        let renamed: boolean;
-        categoryService.renameCategory(username, category.title, newCategory).then(respo => {
-          renamed = respo;
-          expect(renamed).toBe(true);
-          categoryService.getAllCategories(username).then(async response => {
-            categories = response;
-            expect(categories[0]).toEqual({title: 'test32154321'});
-          });
-        });
+      let categories: Category[] = await categoryService.getAllCategories(username);
+      expect(categories.length).toBe(1);
+      expect(categories[0]).toEqual({title});
+      const renamed: boolean = await categoryService.renameCategory(username, category.title, newCategory);
+      expect(renamed).toBe(true);
+      categories = await categoryService.getAllCategories(username);
+      expect(categories[0]).toEqual({title: 'test32154321'});
+    },
+    10000);
+
+  async function deleteAllCategories() {
+    const categories: Category [] = await categoryService.getAllCategories(username);
+    for (const cat of categories) {
+      await categoryService.deleteCategory(username, cat).catch(() => {
       });
-    });
-  }, 10000);
+    }
+  }
 });
