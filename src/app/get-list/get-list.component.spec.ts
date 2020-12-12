@@ -81,9 +81,9 @@ describe('GetListComponent', () => {
       ]
     });
 
-    testBedUserService = TestBed.inject(UserService);
-    testBedCategoryService = TestBed.inject(CategoryService);
-    testBedTaskService = TestBed.inject(TaskService);
+    //testBedUserService = TestBed.inject(UserService);
+    //testBedCategoryService = TestBed.inject(CategoryService);
+    //testBedTaskService = TestBed.inject(TaskService);
     component = new GetListComponent(testBedTaskService, testBedUserService, testBedCategoryService);
     GetListComponent.prototype.ngOnInit = async () => {
 
@@ -120,6 +120,8 @@ describe('GetListComponent', () => {
     testBedCategoryService = TestBed.inject(CategoryService);
     testBedTaskService = TestBed.inject(TaskService);
     fixture = TestBed.createComponent(GetListComponent);
+    await testBedUserService.signUp(listUser.username, listUser.password);
+    await testBedUserService.signIn(listUser.username, listUser.password);
   });
 
   it('should create', () => {
@@ -127,6 +129,7 @@ describe('GetListComponent', () => {
   });
 
   afterAll(async () => {
+    await testBedUserService.signOut();
     console.log('done');
   });
 

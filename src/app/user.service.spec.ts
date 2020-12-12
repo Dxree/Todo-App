@@ -24,14 +24,16 @@ describe('UserService', () => {
       ]
     });
     service = TestBed.inject(UserService);
+    await service.signOut().catch(() => {});
     await service.deleteUser({username, password}).catch(() => {
     });
   }, 10000);
 
   afterEach(async () => {
+    await service.signOut().catch(() => {});
     await service.deleteUser({username, password}).catch(() => {
     });
-  }, 100000);
+  }, 10000);
 
   it('should be created', () => {
     expect(service).toBeTruthy();

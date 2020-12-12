@@ -9,7 +9,6 @@ import {Category} from './category.model';
 
 describe('CategoryService', () => {
   let categoryService: CategoryService;
-  let userService: UserService;
   // let actualUser: User;
   const d = new Date();
   const n = d.getTime();
@@ -28,7 +27,6 @@ describe('CategoryService', () => {
       ]
     });
     categoryService = TestBed.inject(CategoryService);
-    userService = TestBed.inject(UserService);
     await deleteAllCategories();
     // await signUp();
   }, 10000);
