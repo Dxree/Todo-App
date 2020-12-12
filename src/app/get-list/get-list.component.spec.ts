@@ -80,10 +80,6 @@ describe('GetListComponent', () => {
         {provide: ComponentFixtureAutoDetect, useValue: true}
       ]
     });
-
-    //testBedUserService = TestBed.inject(UserService);
-    //testBedCategoryService = TestBed.inject(CategoryService);
-    //testBedTaskService = TestBed.inject(TaskService);
     component = new GetListComponent(testBedTaskService, testBedUserService, testBedCategoryService);
     GetListComponent.prototype.ngOnInit = async () => {
 
