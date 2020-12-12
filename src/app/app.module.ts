@@ -51,8 +51,11 @@ export const firebaseConfig = {
 
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  exports: [
+    AddTaskComponent,
+    AddCategoryComponent
+  ],
 })
 export class AppModule {
 }
-

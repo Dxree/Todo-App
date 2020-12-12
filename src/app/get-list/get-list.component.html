@@ -26,11 +26,12 @@
           <button class="btn btn-outline-primary" id="dropdownFilter"
                   ngbDropdownToggle>{{filtercategory == null ? 'Nach Kategorie filtern' : 'Kategorie: ' + filtercategory}}</button>
           <div ngbDropdownMenu aria-labelledby="dropdownFilter">
-            <button ngbDropdownItem *ngFor="let category of categoryList"
+            <button *ngFor="let category of categoryList" id="category-filter-{{category.title}}" ngbDropdownItem
                     (click)="filter(); filtercategory = this.category.title">{{category.title}}</button>
           </div>
         </div>
-        <button type="button" class="btn btn-secondary" *ngIf="filtercategory != null" (click)="resetFilterCategory()">
+        <button (click)="resetFilterCategory()" *ngIf="filtercategory != null" class="btn btn-secondary" id="resetCategoryFilter"
+                type="button">
           <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x" fill="currentColor"
                xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd"
@@ -41,10 +42,10 @@
     </div>
   </div>
   <ngb-tabset>
-    <ngb-tab title="Taskliste">
+    <ngb-tab id="tasklist-tab" title="Taskliste">
       <ng-template ngbTabContent>
         <div class="container">
-          <table class="table table-striped">
+          <table class="table table-striped" id="tasklist-table">
             <thead>
             <tr>
               <th scope="col">Aufgabe</th>
@@ -55,7 +56,7 @@
               <th scope="col"></th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="taskliste-tbody">
             <tr *ngFor="let todo of todoList; let i = index">
               <td id="{{todo.id}}-title" [contentEditable]="editableTask == todo">{{todo.title}}</td>
               <td id="{{todo.id}}-description" [contentEditable]="editableTask == todo">{{todo.description}}</td>
@@ -65,7 +66,7 @@
               <td *ngIf="editableTask != todo" id="{{todo.id}}-priority">
                 <span title="{{getStringForPriority(todo.priority)}}">
                   <i class="fa {{getIconClassForPriority(todo.priority)}} " aria-hidden="true"></i></span></td>
-              <td *ngIf="editableTask == todo">
+              <td *ngIf="editableTask == todo" id="dropdown-prio">
                 <select class="form-control" id="edit-priority" name="add-priority" [(ngModel)]="todo.priority">
                   <option [value]="5">sehr hoch</option>
                   <option [value]="4">hoch</option>
@@ -77,7 +78,7 @@
 
               <td *ngIf="editableTask != todo"
                   id="{{todo.id}}-category">{{(todo.categories[0] == null || todo.categories[0].title == null) ? '-' : todo.categories[0].title }}</td>
-              <td *ngIf="editableTask == todo">
+              <td *ngIf="editableTask == todo" id="editTaskCat">
                 <select *ngIf="todo.categories[0] != null" class="form-control" id="{{todo.id}}-edit-category"
                         name="category" [(ngModel)]="todo.categories[0].title">
                   <option [ngValue]="null" [selected]="todo.categories[0] == null">keine Kategorie</option>
@@ -96,7 +97,8 @@
                 </select>
               </td>
               <td class="text-right" width="100px">
-                <button type="button" class="btn btn-secondary" (click)="deleteTask(todo)">
+                <button (click)="deleteTask(todo)" class="btn btn-secondary" id="todoDeleteBtn-{{todo.id}}"
+                        type="button">
                   <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor"
                        xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd"
@@ -105,19 +107,22 @@
                 </button>
               </td>
               <td width="100px">
-                <button *ngIf="editableTask != todo" type="button" class="btn btn-secondary" (click)="editTask(todo)">
+                <button (click)="editTask(todo)" *ngIf="editableTask != todo" class="btn btn-secondary"
+                        id="todoEditBtn-{{todo.id}}" type="button">
                   <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil-fill" fill="currentColor"
                        xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd"
                           d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
                   </svg>
                 </button>
-                <button *ngIf="editableTask== todo" type="button" class="btn btn-secondary" (click)="confirmEdit()">
+                <button (click)="confirmEdit()" *ngIf="editableTask== todo" class="btn btn-secondary" id="todoConfirmEditBtn"
+                        type="button">
                   speichern <!-- TODO: Add done svg -->
                 </button>
               </td>
               <td width="100px">
-                <button type="button" class="btn btn-secondary" (click)="setTaskDone(todo)">Fertig
+                <button (click)="setTaskDone(todo)" class="btn btn-secondary" id="todoDoneBtn-{{todo.id}}"
+                        type="button">Fertig
                   <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-circle" fill="currentColor"
                        xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd"
