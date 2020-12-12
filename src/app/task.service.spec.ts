@@ -39,7 +39,7 @@ describe('TaskService', () => {
         AngularFirestore
       ]
     });
-    service = TestBed.get(TaskService);
+    service = TestBed.inject(TaskService);
     userCollectionRef = firebase.firestore().collection('users');
     await userCollectionRef.doc(testUsername).set({username: testUsername});
     userTaskRef = userCollectionRef.doc(testUsername).collection('tasks');
@@ -65,7 +65,7 @@ describe('TaskService', () => {
     const success: boolean = await service.updateTask(testUsername, task);
     expect(success).toBeTruthy();
 
-    let data;
+    let data = null;
     await userTaskRef.doc(task.id).get().then(doc => data = doc.data());
     expect(data.title).toEqual(task.title);
   });

@@ -81,10 +81,10 @@ describe('GetListComponent', () => {
       ]
     })
       .compileComponents();
-    testBedUserService = TestBed.get(UserService);
-    testBedCategoryService = TestBed.get(CategoryService);
-    testBedTaskService = TestBed.get(TaskService);
-    component = new GetListComponent(testBedTaskService, testBedUserService, testBedCategoryService)
+    testBedUserService = TestBed.inject(UserService);
+    testBedCategoryService = TestBed.inject(CategoryService);
+    testBedTaskService = TestBed.inject(TaskService);
+    component = new GetListComponent(testBedTaskService, testBedUserService, testBedCategoryService);
     GetListComponent.prototype.ngOnInit = async () => {
 
     };
@@ -116,9 +116,9 @@ describe('GetListComponent', () => {
   });
 
   beforeAll(async () => {
-    testBedUserService = TestBed.get(UserService);
-    testBedCategoryService = TestBed.get(CategoryService);
-    testBedTaskService = TestBed.get(TaskService);
+    testBedUserService = TestBed.inject(UserService);
+    testBedCategoryService = TestBed.inject(CategoryService);
+    testBedTaskService = TestBed.inject(TaskService);
     fixture = TestBed.createComponent(GetListComponent);
     await testBedUserService.signUp(listUser.username, listUser.password);
     await testBedUserService.signIn(listUser.username, listUser.password);
@@ -139,7 +139,7 @@ describe('GetListComponent', () => {
 function testingFunctions() {
 
   // Test if NgOnInit is called
-  it('should call ngOnInit', () =>  {
+  it('should call ngOnInit', () => {
     const getList = new GetListComponent(testBedTaskService, testBedUserService, testBedCategoryService);
     getList.username = listUser.username;
     expect(getList.ngOnInit).toBeTruthy();
@@ -179,7 +179,7 @@ function testingFunctions() {
   });
 
   // Test if editCategory sets Category to editable
-  it('should set CategoryID and editable Category', () =>  {
+  it('should set CategoryID and editable Category', () => {
     component.editCategory(debugCategory);
     expect(component.originalCategoryId).toBe(debugCategory.title);
     expect(component.editableCategory).toBe(debugCategory);
@@ -282,7 +282,7 @@ function testingFunctions() {
 
   // Test the filterCategory for correct filtering in Tasks
   // Problem: Error: Expected $.length = 0 to equal 1.
-  xit('should filter Category correctly',  () => {
+  xit('should filter Category correctly', () => {
     const getList = new GetListComponent(testBedTaskService, testBedUserService, testBedCategoryService);
     getList.username = listUser.username;
     const filteredCat = getList.filterCategory(debugTaskArr, 'debugCategory');

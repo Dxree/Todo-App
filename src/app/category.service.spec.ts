@@ -5,9 +5,7 @@ import {AngularFireAuthModule} from '@angular/fire/auth';
 import {AngularFireModule} from '@angular/fire';
 import {firebaseConfig} from './app.module';
 import {AngularFirestore, AngularFirestoreModule} from '@angular/fire/firestore';
-import {User} from './user.model';
 import {Category} from './category.model';
-import {getLocaleTimeFormat} from '@angular/common';
 
 describe('CategoryService', () => {
   let categoryService: CategoryService;
@@ -29,8 +27,8 @@ describe('CategoryService', () => {
         AngularFirestore,
       ]
     });
-    categoryService = TestBed.get(CategoryService);
-    userService = TestBed.get(UserService);
+    categoryService = TestBed.inject(CategoryService);
+    userService = TestBed.inject(UserService);
     await deleteAllCategories();
     // await signUp();
   }, 10000);

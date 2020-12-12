@@ -23,7 +23,7 @@ describe('UserService', () => {
         AngularFirestore,
       ]
     });
-    service = TestBed.get(UserService);
+    service = TestBed.inject(UserService);
     await service.deleteUser({username, password}).catch(() => {
     });
   }, 10000);
